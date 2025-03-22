@@ -6,6 +6,7 @@ export interface GlobalParams extends Window {
     containerDiv: HTMLElement;
     setCursor: Function;
     cursor: string;
+    [key: string]: any;
 }
 
 interface paneStyle {

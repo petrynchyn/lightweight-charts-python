@@ -12,8 +12,8 @@ import { HorizontalLine } from '../horizontal-line/horizontal-line';
 export class DrawingTool {
     private _chart: IChartApi;
     private _series: ISeriesApi<SeriesType>;
-    private _finishDrawingCallback: Function | null = null;
-
+    private _finishDrawingCallback: Function = () => {};
+    private _mouseIsDown: boolean = false;
     private _drawings: Drawing[] = [];
     private _activeDrawing: Drawing | null = null;
     private _isDrawing: boolean = false;
@@ -22,7 +22,9 @@ export class DrawingTool {
     constructor(chart: IChartApi, series: ISeriesApi<SeriesType>, finishDrawingCallback: Function | null = null) {
         this._chart = chart;
         this._series = series;
-        this._finishDrawingCallback = finishDrawingCallback;
+
+        if (finishDrawingCallback)
+            this._finishDrawingCallback = finishDrawingCallback;
 
         this._chart.subscribeClick(this._clickHandler);
         this._chart.subscribeCrosshairMove(this._moveHandler);
@@ -56,6 +58,8 @@ export class DrawingTool {
         if (idx == -1) return;
         this._drawings.splice(idx, 1)
         d.detach();
+
+        this._finishDrawingCallback();
     }
 
     clearDrawings() {
@@ -102,7 +106,6 @@ export class DrawingTool {
             this._drawings.push(this._activeDrawing);
             this.stopDrawing();
 
-            if (!this._finishDrawingCallback) return;
             this._finishDrawingCallback();
         }
     }
@@ -111,6 +114,14 @@ export class DrawingTool {
         if (!param) return;
 
         for (const t of this._drawings) t._handleHoverInteraction(param);
+
+        if (Drawing._mouseIsDown && !this._mouseIsDown)
+            this._mouseIsDown = true;
+        
+        if (!Drawing._mouseIsDown && this._mouseIsDown) {
+            this._finishDrawingCallback();
+            this._mouseIsDown = false;
+        }
 
         if (!this._isDrawing || !this._activeDrawing) return;
 
