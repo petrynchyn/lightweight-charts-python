@@ -32,7 +32,7 @@ export abstract class Drawing extends PluginBase {
     protected _startDragPoint: Point | null = null;
     protected _latestHoverPoint: any | null = null;
 
-    protected static _mouseIsDown: boolean = false;
+    public static _mouseIsDown: boolean = false;
 
     public static hoveredObject: Drawing | null = null;
     public static lastHoveredObject: Drawing | null = null;

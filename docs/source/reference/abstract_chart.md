@@ -56,7 +56,7 @@ ___
 
 
 
-```{py:method} create_line(name: str, color: COLOR, style: LINE_STYLE, width: int, price_line: bool, price_label: bool) -> Line
+```{py:method} create_line(name: str, color: COLOR, style: LINE_STYLE, type: LINE_TYPE, width: int, price_line: bool, price_label: bool) -> Line
 
 Creates and returns a Line object, representing a `LineSeries` object in Lightweight Charts and can be used to create indicators. As well as the methods described below, the `Line` object also has access to:
 
@@ -89,7 +89,7 @@ ___
 
 
 
-```{py:method} trend_line(start_time: str | datetime, start_value: NUM, end_time: str | datetime, end_value: NUM, color: COLOR, width: int, style: LINE_STYLE, round: bool) -> Line
+```{py:method} trend_line(start_time: str | datetime, start_value: NUM, end_time: str | datetime, end_value: NUM, line_color: COLOR, width: int, style: LINE_STYLE, round: bool) -> Line
 
 Creates a trend line, drawn from the first point (`start_time`, `start_value`) to the last point (`end_time`, `end_value`).
 

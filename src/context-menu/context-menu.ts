@@ -28,20 +28,23 @@ declare const window: GlobalParams;
 
 
 export class ContextMenu {
+    private container: HTMLDivElement;
     private div: HTMLDivElement
     private hoverItem: Item | null;
     private items: HTMLElement[] = []
 
     constructor(
+        private handlerID: string,
         private saveDrawings: Function,
         private drawingTool: DrawingTool,
     ) {
         this._onRightClick = this._onRightClick.bind(this);
         this.div = document.createElement('div');
         this.div.classList.add('context-menu');
-        document.body.appendChild(this.div);
+        this.container = window[this.handlerID.split('.')[1]].div;
+        this.container.appendChild(this.div);
         this.hoverItem = null;
-        document.body.addEventListener('contextmenu', this._onRightClick);
+        this.container.addEventListener('contextmenu', this._onRightClick);
     }
 
     _handleClick = (ev: MouseEvent) => this._onClick(ev);
@@ -58,7 +61,7 @@ export class ContextMenu {
         if (!Drawing.hoveredObject) return;
 
         for (const item of this.items) {
-            this.div.removeChild(item);
+            item.remove();
         }
         this.items = [];
 
@@ -69,6 +72,8 @@ export class ContextMenu {
             } else if (optionName === 'lineStyle') {
                 subMenu = new StylePicker(this.saveDrawings)
             } else continue;
+
+            this.items.push(subMenu._div)
 
             let onClick = (rect: DOMRect) => subMenu.openMenu(rect)
             this.menuItem(camelToTitle(optionName), onClick, () => {
@@ -101,8 +106,8 @@ export class ContextMenu {
 
 
         ev.preventDefault();
-        this.div.style.left = ev.clientX + 'px';
-        this.div.style.top = ev.clientY + 'px';
+        this.div.style.left = ev.offsetX + 'px';
+        this.div.style.top = ev.offsetY + 'px';
         this.div.style.display = 'block';
         document.body.addEventListener('click', this._handleClick);
     }

@@ -26,6 +26,8 @@ export class ToolBox {
     private static readonly VERT_SVG: string = ToolBox.RAY_SVG;
 
     div: HTMLDivElement;
+    contextMenu: ContextMenu;
+
     private activeIcon: Icon | null = null;
 
     private buttons: HTMLDivElement[] = [];
@@ -40,7 +42,7 @@ export class ToolBox {
         this._commandFunctions = commandFunctions;
         this._drawingTool = new DrawingTool(chart, series, () => this.removeActiveAndSave());
         this.div = this._makeToolBox()
-        new ContextMenu(this.saveDrawings, this._drawingTool);
+        this.contextMenu = new ContextMenu(this._handlerID, this.saveDrawings, this._drawingTool);
 
         commandFunctions.push((event: KeyboardEvent) => {
             if ((event.metaKey || event.ctrlKey) && event.code === 'KeyZ') {
