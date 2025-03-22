@@ -177,7 +177,7 @@ class JupyterChart(StaticLWC):
             document.getElementById('container').style.width = '{self.width}px'
             document.getElementById('container').style.height = '100%'
             ''')
-        self.run_script(f'{self.id}.chart.resize({width}, {height})')
+        self.run_script(f'{self.id}.chart.resize({width*inner_width}, {height*inner_height})')
 
     def _load(self):
         if HTML is None:

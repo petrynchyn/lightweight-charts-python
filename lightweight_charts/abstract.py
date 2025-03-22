@@ -3,7 +3,7 @@ import json
 import os
 from base64 import b64decode
 from datetime import datetime
-from typing import Callable, Union, Literal, List, Optional
+from typing import Callable, Union, Literal, List, Optional, Dict
 import pandas as pd
 
 from .table import Table
@@ -30,6 +30,7 @@ from .util import (
     NUM,
     FLOAT,
     LINE_STYLE,
+    LINE_TYPE,
     MARKER_POSITION,
     MARKER_SHAPE,
     CROSSHAIR_MODE,
@@ -441,6 +442,7 @@ class SeriesCommon(Pane):
         min_move = 1 / (10**precision)
         self.run_script(
             f"""
+        {self.id}.precision = {precision}
         {self.id}.series.applyOptions({{
             priceFormat: {{precision: {precision}, minMove: {min_move}}}
         }})"""
@@ -486,6 +488,7 @@ class Line(SeriesCommon):
         name,
         color,
         style,
+        type,
         width,
         price_line,
         price_label,
@@ -504,6 +507,7 @@ class Line(SeriesCommon):
                 {{
                     color: '{color}',
                     lineStyle: {as_enum(style, LINE_STYLE)},
+                    lineType: {as_enum(type, LINE_TYPE)},
                     lineWidth: {width},
                     lastValueVisible: {jbool(price_label)},
                     priceLineVisible: {jbool(price_line)},
@@ -855,6 +859,7 @@ class AbstractChart(Candlestick, Pane):
         name: str = "",
         color: str = "rgba(214, 237, 255, 0.6)",
         style: LINE_STYLE = "solid",
+        type: LINE_TYPE = 'simple',
         width: int = 2,
         price_line: bool = True,
         price_label: bool = True,
@@ -870,6 +875,7 @@ class AbstractChart(Candlestick, Pane):
                 name,
                 color,
                 style,
+                type,
                 width,
                 price_line,
                 price_label,
@@ -918,6 +924,13 @@ class AbstractChart(Candlestick, Pane):
         }})
         """
         )
+
+    def get_visible_range(self) -> Dict[str, datetime]:
+        _visible_range = self.win.run_script_and_get(f'{self.id}.chart.timeScale().getVisibleRange()')
+        return {
+            "from": datetime.fromtimestamp(_visible_range["from"]),
+            "to":   datetime.fromtimestamp(_visible_range["to"]),
+        }
 
     def resize(self, width: Optional[float] = None, height: Optional[float] = None):
         """
